@@ -42,15 +42,27 @@
   <button id="micButton">🎙️</button>
 
   <script>
-    const backendUrl = "https://historiador-backend.onrender.com/chat"; // 🔧 Replace with your backend URL
+    const backendBaseUrl = "https://YOUR-RENDER-URL-HERE"; // 🔧 Replace with your backend Render URL (no /chat here)
+
+    let threadId = null;
+
+    // Create thread on page load
+    async function createThread() {
+      const response = await fetch(`${backendBaseUrl}/start`, {
+        method: "POST",
+        headers: {'Content-Type': 'application/json'}
+      });
+      const data = await response.json();
+      threadId = data.thread_id;
+    }
 
     async function sendMessage(userMessage) {
       document.getElementById("chatbox").innerHTML += `<p><b>Estudiante:</b> ${userMessage}</p>`;
 
-      const response = await fetch(backendUrl, {
+      const response = await fetch(`${backendBaseUrl}/chat`, {
         method: "POST",
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ message: userMessage })
+        body: JSON.stringify({ message: userMessage, thread_id: threadId })
       });
 
       const data = await response.json();
@@ -71,7 +83,11 @@
         sendMessage(transcript);
       }
     };
+
+    // Create thread on page load
+    createThread();
   </script>
 </body>
 </html>
+
 
